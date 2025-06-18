@@ -34,7 +34,8 @@ while True:
         
     elif choice == "5":
         # Отметить задачу выполненной
-        pass
+        tasks_manager.mark_task_completed()
+    
     elif choice == "6":
         # Отметить какую задачу не смог выполнить
         pass

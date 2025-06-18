@@ -21,7 +21,7 @@ class TaskManager:
         text = input("Введите текст задачи: ")
         with open('task.json', 'r', encoding="utf-8") as file:
             tasks = json.load(file)
-            task_id = len(tasks) + 1
+            task_id = max([task['id'] for task in tasks], default=0) + 1
             tasks.append({'id': task_id, 'text': text, 'status': 'В процессе'})
         with open('task.json', 'w', encoding="utf-8") as file:
             json.dump(tasks, file, ensure_ascii=False, indent=4)
@@ -54,7 +54,16 @@ class TaskManager:
                     return
 
     def mark_task_completed(self):
-        pass
+        with open('task.json', 'r', encoding="utf-8") as file:
+            tasks = json.load(file)
+            task_id = int(input("Введите ID задачи, которую хотите отметить выполненной: "))
+            for task in tasks:
+                if task['id'] == task_id:
+                    task['status'] = 'Выполнено'
+                    with open('task.json', 'w', encoding="utf-8") as file:
+                        json.dump(tasks, file, ensure_ascii=False, indent=4)
+                    print("Задача успешно отмечена выполненной.\n")
+                    return
     
     def mark_task_not_completed(self):
         pass
