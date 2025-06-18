@@ -1,5 +1,9 @@
 # Файл запуска программы
 
+import task_manager
+
+tasks_manager = task_manager.TaskManager()
+
 while True:
     print("Выберите действие:")
     print("1. Посмотреть список задач")
@@ -14,7 +18,8 @@ while True:
     
     if choice == "1":
         # Посмотреть список задач
-        pass
+        tasks_manager.view_tasks()
+        
     elif choice == "2":
         # Добавить задачу
         pass
