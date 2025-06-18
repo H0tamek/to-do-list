@@ -66,4 +66,13 @@ class TaskManager:
                     return
     
     def mark_task_not_completed(self):
-        pass
+        with open('task.json', 'r', encoding="utf-8") as file:
+            tasks = json.load(file)
+            task_id = int(input("Введите ID задачи, которую хотите отметить не выполненной: "))
+            for task in tasks:
+                if task['id'] == task_id:
+                    task['status'] = 'Не выполнено'
+                    with open('task.json', 'w', encoding="utf-8") as file:
+                        json.dump(tasks, file, ensure_ascii=False, indent=4)
+                    print("Задача успешно отмечена не выполненной.\n")
+                    return
