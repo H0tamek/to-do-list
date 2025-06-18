@@ -1,12 +1,17 @@
 [
     {
-        "id": "1",
-        "text": "Тест",
+        "id": 1,
+        "text": "Lolka",
         "status": "В процессе"
     },
     {
         "id": 2,
         "text": "lolka",
+        "status": "В процессе"
+    },
+    {
+        "id": 3,
+        "text": "Kaka",
         "status": "В процессе"
     }
 ]

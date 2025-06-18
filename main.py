@@ -27,7 +27,8 @@ while True:
         
     elif choice == "3":
         # Изменить задачу
-        pass
+        tasks_manager.edit_task()
+        
     elif choice == "4":
         # Удалить задачу
         pass

@@ -15,6 +15,7 @@ class TaskManager:
             tasks = json.load(file)
             for task in tasks:
                 print(f"ID: {task['id']}, Текст: {task['text']}, Статус: {task['status']}")
+            print()
     
     def add_task(self, text):
         with open('task.json', 'r', encoding="utf-8") as file:
@@ -23,9 +24,21 @@ class TaskManager:
             tasks.append({'id': task_id, 'text': text, 'status': 'В процессе'})
         with open('task.json', 'w', encoding="utf-8") as file:
             json.dump(tasks, file, ensure_ascii=False, indent=4)
+        print("Задача успешно добавлена.\n")
     
     def edit_task(self):
-        pass
+        with open('task.json', 'r', encoding="utf-8") as file:
+            tasks = json.load(file)
+            task_id = int(input("Введите ID задачи, которую хотите изменить: "))
+            for task in tasks:
+                if task['id'] == task_id:
+                    new_text = input("Введите новый текст задачи: ")
+                    task['text'] = new_text
+                    task['status'] = 'В процессе'
+                    with open('task.json', 'w', encoding="utf-8") as file:
+                        json.dump(tasks, file, ensure_ascii=False, indent=4)
+                    print("Задача успешно изменена.\n")
+                    return
     
     def delete_task(self):
         pass
