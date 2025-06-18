@@ -27,7 +27,7 @@ A simple console-based task management application written in Python. Perfect fo
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/H0tamek/to-do-list.git
+   git clone https://github.com/your-username/todo-manager.git
    cd todo-manager
    ```
 
@@ -79,14 +79,28 @@ ID: 3, Text: Solve complex algorithm, Status: Not Completed
 
 **Editing a task:**
 - Select option 3
-- Enter the task ID you want to edit
+- Enter the task ID you want to edit (numbers only)
 - Enter new task text
 - Status automatically resets to "In Progress"
+- If task ID not found, you'll get a helpful error message
 
 **Deleting a task:**
 - Select option 4
-- Enter the task ID you want to delete
+- Enter the task ID you want to delete (numbers only)
 - Task is permanently removed
+- If task ID not found, you'll get a helpful error message
+
+**Error Handling Examples:**
+```
+Enter action number: abc
+Error: Invalid input - invalid literal for int() with base 10: 'abc'
+
+Enter the ID of the task you want to edit: xyz
+Invalid task ID format. Please enter a number.
+
+Choose action: 9
+Invalid choice. Please enter a number between 1 and 7.
+```
 
 ## 💾 Data Format
 
@@ -111,27 +125,25 @@ Tasks are stored in `task.json` file with the following structure:
 
 - **Language:** Python 3
 - **Data Storage:** JSON file (`task.json`)
-- **Architecture:** Simple class-based structure
+- **Architecture:** Simple class-based structure with robust error handling
 - **File Handling:** Automatic file creation and UTF-8 encoding
 - **ID Management:** Auto-incrementing task IDs
+- **Error Handling:** Comprehensive try-catch blocks for all operations
+- **Input Validation:** Proper validation for user inputs and file operations
 
 ## ✨ Key Features of Implementation
 
 - **Automatic File Creation:** Creates `task.json` if it doesn't exist
 - **UTF-8 Support:** Handles international characters properly
 - **Simple Menu System:** Easy-to-use console interface
-- **Error Handling:** Basic validation for user inputs
+- **Comprehensive Error Handling:** Handles various error scenarios:
+  - Invalid user input (non-numeric task IDs)
+  - File not found errors
+  - JSON parsing errors
+  - General exceptions with descriptive messages
+- **Input Validation:** Menu choice validation (1-7 range)
 - **Persistent Storage:** All changes are immediately saved to file
-
-## 🚀 Future Enhancements
-
-- [ ] Add task categories/tags
-- [ ] Implement due dates
-- [ ] Add task priority levels
-- [ ] Search functionality
-- [ ] Export to different formats
-- [ ] GUI interface
-- [ ] Better error handling and validation
+- **Graceful Error Recovery:** Application continues running after errors
 
 ## 🤝 Contributing
 
@@ -150,7 +162,11 @@ This project demonstrates:
 - Class-based programming
 - File I/O operations
 - Menu-driven applications
-- Error handling basics
+- **Comprehensive error handling and exception management**
+- **Input validation techniques**
+- **Defensive programming practices**
+- **Try-catch block implementation**
+- **User-friendly error messaging**
 
 ## 📝 License
 
@@ -175,6 +191,12 @@ Core functionality including:
 - JSON file handling (read/write)
 - Task CRUD operations (Create, Read, Update, Delete)
 - Status management
+- **Comprehensive error handling for all operations:**
+  - `FileNotFoundError` handling
+  - `json.JSONDecodeError` handling for corrupted files
+  - `ValueError` handling for invalid input types
+  - General exception handling with descriptive messages
+  - Task ID validation and "not found" scenarios
 
 ### task.json
 Auto-generated JSON file that stores all task data with proper UTF-8 encoding.
