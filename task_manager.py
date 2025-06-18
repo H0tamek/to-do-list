@@ -17,7 +17,8 @@ class TaskManager:
                 print(f"ID: {task['id']}, Текст: {task['text']}, Статус: {task['status']}")
             print()
     
-    def add_task(self, text):
+    def add_task(self):
+        text = input("Введите текст задачи: ")
         with open('task.json', 'r', encoding="utf-8") as file:
             tasks = json.load(file)
             task_id = len(tasks) + 1
@@ -41,8 +42,17 @@ class TaskManager:
                     return
     
     def delete_task(self):
-        pass
-    
+        with open('task.json', 'r', encoding="utf-8") as file:
+            tasks = json.load(file)
+            task_id = int(input("Введите ID задачи, которую хотите удалить: "))
+            for task in tasks:
+                if task['id'] == task_id:
+                    tasks.remove(task)
+                    with open('task.json', 'w', encoding="utf-8") as file:
+                        json.dump(tasks, file, ensure_ascii=False, indent=4)
+                    print("Задача успешно удалена.\n")
+                    return
+
     def mark_task_completed(self):
         pass
     

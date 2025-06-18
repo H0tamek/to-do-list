@@ -1,10 +1,5 @@
 [
     {
-        "id": 1,
-        "text": "Lolka",
-        "status": "В процессе"
-    },
-    {
         "id": 2,
         "text": "lolka",
         "status": "В процессе"
@@ -12,6 +7,11 @@
     {
         "id": 3,
         "text": "Kaka",
+        "status": "В процессе"
+    },
+    {
+        "id": 3,
+        "text": "popka",
         "status": "В процессе"
     }
 ]

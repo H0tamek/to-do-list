@@ -22,8 +22,7 @@ while True:
         
     elif choice == "2":
         # Добавить задачу
-        text = input("Введите текст задачи: ")
-        tasks_manager.add_task(text)
+        tasks_manager.add_task()
         
     elif choice == "3":
         # Изменить задачу
@@ -31,7 +30,8 @@ while True:
         
     elif choice == "4":
         # Удалить задачу
-        pass
+        tasks_manager.delete_task()
+        
     elif choice == "5":
         # Отметить задачу выполненной
         pass
