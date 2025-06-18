@@ -1,12 +1,7 @@
 [
     {
-        "id": 2,
-        "text": "Kaka",
-        "status": "Выполнено"
-    },
-    {
-        "id": 3,
-        "text": "popka",
-        "status": "Не выполнено"
+        "id": 1,
+        "text": "Test",
+        "status": "In Progress"
     }
 ]
