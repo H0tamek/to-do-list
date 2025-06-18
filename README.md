@@ -145,6 +145,15 @@ Tasks are stored in `task.json` file with the following structure:
 - **Persistent Storage:** All changes are immediately saved to file
 - **Graceful Error Recovery:** Application continues running after errors
 
+## 🚀 Future Enhancements
+
+- [ ] Add task categories/tags
+- [ ] Implement due dates
+- [ ] Add task priority levels
+- [ ] Export to different formats
+- [ ] Task history/audit trail
+- [ ] Bulk operations (mark multiple tasks)
+
 ## 🤝 Contributing
 
 Contributions are welcome! If you have ideas for improvements:
