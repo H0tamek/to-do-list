@@ -10,7 +10,7 @@ A simple console-based task management application written in Python. Perfect fo
 - 🗑️ Delete tasks
 - ✔️ Mark tasks as completed
 - ❌ Mark tasks as not completed
-- 💾 Automatic JSON file storage
+- 💾 SQLite database storage with automatic migration from JSON
 
 ## 🎯 Task Statuses
 
@@ -104,7 +104,9 @@ Invalid choice. Please enter a number between 1 and 7.
 
 ## 💾 Data Format
 
-Tasks are stored in `task.json` file with the following structure:
+Legacy tasks can be imported from `task.json` automatically on first launch. New data is stored in `tasks.db`.
+
+The previous JSON structure looked like this:
 
 ```json
 [
@@ -124,7 +126,7 @@ Tasks are stored in `task.json` file with the following structure:
 ## 🔧 Technical Details
 
 - **Language:** Python 3
-- **Data Storage:** JSON file (`task.json`)
+- **Data Storage:** SQLite database (`tasks.db`)
 - **Architecture:** Simple class-based structure with robust error handling
 - **File Handling:** Automatic file creation and UTF-8 encoding
 - **ID Management:** Auto-incrementing task IDs
@@ -133,7 +135,8 @@ Tasks are stored in `task.json` file with the following structure:
 
 ## ✨ Key Features of Implementation
 
-- **Automatic File Creation:** Creates `task.json` if it doesn't exist
+- **Automatic Database Creation:** Creates `tasks.db` and required tables if they don't exist
+- **Automatic Migration:** Imports tasks from `task.json` when migrating from the old storage format
 - **UTF-8 Support:** Handles international characters properly
 - **Simple Menu System:** Easy-to-use console interface
 - **Comprehensive Error Handling:** Handles various error scenarios:
@@ -207,5 +210,8 @@ Core functionality including:
   - General exception handling with descriptive messages
   - Task ID validation and "not found" scenarios
 
+### tasks.db
+SQLite database used for persistent task storage.
+
 ### task.json
-Auto-generated JSON file that stores all task data with proper UTF-8 encoding.
+Legacy JSON storage file kept for backward compatibility and one-time migration.
