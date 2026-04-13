@@ -24,6 +24,7 @@ class TaskDatabase:
                     category TEXT NOT NULL DEFAULT 'General',
                     tags TEXT NOT NULL DEFAULT '',
                     due_date TEXT NOT NULL DEFAULT '',
+                    pinned INTEGER NOT NULL DEFAULT 0,
                     status TEXT NOT NULL CHECK (
                         status IN ('In Progress', 'Completed', 'Not Completed')
                     ),
@@ -73,6 +74,12 @@ class TaskDatabase:
                 "ALTER TABLE tasks ADD COLUMN due_date TEXT NOT NULL DEFAULT ''",
             )
 
+        if "pinned" not in columns:
+            self._safe_add_column(
+                connection,
+                "ALTER TABLE tasks ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0",
+            )
+
     def _safe_add_column(self, connection, statement):
         try:
             connection.execute(statement)
@@ -109,6 +116,7 @@ class TaskDatabase:
                 task_category = str(task.get("category", "General")).strip() or "General"
                 task_tags = self._normalize_tags(task.get("tags", []))
                 task_due_date = str(task.get("due_date", "")).strip()
+                task_pinned = 1 if task.get("pinned", False) else 0
 
                 if not task_text:
                     continue
@@ -126,6 +134,7 @@ class TaskDatabase:
                         task_category,
                         task_tags,
                         task_due_date,
+                        task_pinned,
                         task_status,
                     )
                 )
@@ -133,8 +142,8 @@ class TaskDatabase:
             if valid_tasks:
                 connection.executemany(
                     """
-                    INSERT INTO tasks (title, text, category, tags, due_date, status, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                    INSERT INTO tasks (title, text, category, tags, due_date, pinned, status, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
                     """,
                     valid_tasks,
                 )
@@ -160,9 +169,9 @@ class TaskDatabase:
         with self._connect() as connection:
             cursor = connection.execute(
                 """
-                SELECT id, title, text, category, tags, due_date, status
+                SELECT id, title, text, category, tags, due_date, pinned, status, updated_at
                 FROM tasks
-                ORDER BY updated_at DESC, id DESC
+                ORDER BY pinned DESC, updated_at DESC, id DESC
                 """
             )
             return [
@@ -173,7 +182,9 @@ class TaskDatabase:
                     "category": row[3],
                     "tags": row[4],
                     "due_date": row[5],
-                    "status": row[6],
+                    "pinned": bool(row[6]),
+                    "status": row[7],
+                    "updated_at": row[8],
                 }
                 for row in cursor.fetchall()
             ]
@@ -182,7 +193,7 @@ class TaskDatabase:
         with self._connect() as connection:
             row = connection.execute(
                 """
-                SELECT id, title, text, category, tags, due_date, status
+                SELECT id, title, text, category, tags, due_date, pinned, status, updated_at
                 FROM tasks
                 WHERE id = ?
                 """,
@@ -199,28 +210,37 @@ class TaskDatabase:
                 "category": row[3],
                 "tags": row[4],
                 "due_date": row[5],
-                "status": row[6],
+                "pinned": bool(row[6]),
+                "status": row[7],
+                "updated_at": row[8],
             }
 
-    def add_task(self, title, text, category, tags, due_date):
+    def add_task(self, title, text, category, tags, due_date, pinned=False):
         with self._connect() as connection:
             cursor = connection.execute(
                 """
-                INSERT INTO tasks (title, text, category, tags, due_date, status, updated_at)
-                VALUES (?, ?, ?, ?, ?, 'In Progress', CURRENT_TIMESTAMP)
+                INSERT INTO tasks (title, text, category, tags, due_date, pinned, status, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, 'In Progress', CURRENT_TIMESTAMP)
                 """,
-                (title, text, category, self._normalize_tags(tags), due_date),
+                (
+                    title,
+                    text,
+                    category,
+                    self._normalize_tags(tags),
+                    due_date,
+                    1 if pinned else 0,
+                ),
             )
             connection.commit()
             return cursor.lastrowid
 
-    def update_task(self, task_id, title, new_text, category, tags, due_date):
+    def update_task(self, task_id, title, new_text, category, tags, due_date, pinned):
         with self._connect() as connection:
             cursor = connection.execute(
                 """
                 UPDATE tasks
                 SET title = ?, text = ?, category = ?, tags = ?, due_date = ?,
-                    status = 'In Progress', updated_at = CURRENT_TIMESTAMP
+                    pinned = ?, updated_at = CURRENT_TIMESTAMP
                 WHERE id = ?
                 """,
                 (
@@ -229,6 +249,7 @@ class TaskDatabase:
                     category,
                     self._normalize_tags(tags),
                     due_date,
+                    1 if pinned else 0,
                     task_id,
                 ),
             )
@@ -253,6 +274,19 @@ class TaskDatabase:
                 WHERE id = ?
                 """,
                 (status, task_id),
+            )
+            connection.commit()
+            return cursor.rowcount > 0
+
+    def update_pinned(self, task_id, pinned):
+        with self._connect() as connection:
+            cursor = connection.execute(
+                """
+                UPDATE tasks
+                SET pinned = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+                """,
+                (1 if pinned else 0, task_id),
             )
             connection.commit()
             return cursor.rowcount > 0

@@ -28,7 +28,9 @@ class TaskManager:
     def list_tasks(self):
         return self.database.get_all_tasks()
 
-    def create_task(self, title, text, category="General", tags=None, due_date=""):
+    def create_task(
+        self, title, text, category="General", tags=None, due_date="", pinned=False
+    ):
         cleaned_text = text.strip()
         cleaned_category = category.strip() or "General"
         normalized_title = self._normalize_title(title, cleaned_text)
@@ -43,12 +45,15 @@ class TaskManager:
             cleaned_category,
             tags or [],
             normalized_due_date,
+            pinned,
         )
 
     def get_task(self, task_id):
         return self.database.get_task_by_id(task_id)
 
-    def update_task_details(self, task_id, title, text, category, tags, due_date=""):
+    def update_task_details(
+        self, task_id, title, text, category, tags, due_date="", pinned=False
+    ):
         cleaned_text = text.strip()
         cleaned_category = category.strip() or "General"
         normalized_title = self._normalize_title(title, cleaned_text)
@@ -64,6 +69,7 @@ class TaskManager:
             cleaned_category,
             tags or [],
             normalized_due_date,
+            pinned,
         )
         if not updated:
             raise ValueError("Note with specified ID not found.")
@@ -75,6 +81,11 @@ class TaskManager:
 
     def change_task_status(self, task_id, status):
         updated = self.database.update_status(task_id, status)
+        if not updated:
+            raise ValueError("Note with specified ID not found.")
+
+    def toggle_pinned(self, task_id, pinned):
+        updated = self.database.update_pinned(task_id, pinned)
         if not updated:
             raise ValueError("Note with specified ID not found.")
 
