@@ -2,13 +2,13 @@
 
 Todo Manager is gradually evolving into a desktop note-taking application written in Python. It provides a structured workspace for writing notes, organizing them with categories and tags, tracking status when needed, and storing everything locally in SQLite.
 
-The application is designed to be lightweight, reliable, and easy to run in any standard Python environment without external dependencies.
+The application is designed to be local-first and reliable, and it is now beginning its migration from `tkinter` to `PySide6` to support a smoother and more modern desktop interface.
 
 ## Overview
 
 This project offers a simple command-line interface for day-to-day task tracking. It supports the full task lifecycle, from initial creation to completion, and includes persistent local storage with automatic migration from the legacy JSON format.
 
-The current version includes a desktop interface built with `tkinter`, offering a dark workspace, note properties, categories, tags, due dates, and an integrated calendar panel.
+The current version includes the first Qt-based desktop interface built with `PySide6`, following a dark note-workspace layout with a left note library, a central editor, and a right calendar panel that can be hidden when not needed.
 
 ## Features
 
@@ -22,6 +22,7 @@ The current version includes a desktop interface built with `tkinter`, offering 
 - Add tags for filtering and grouping
 - Assign due dates to tasks
 - Search notes from the sidebar
+- Toggle the right calendar panel on and off
 - Store data in a local SQLite database
 - Automatically migrate legacy data from `task.json` to `tasks.db`
 - Manage tasks through a desktop graphical interface
@@ -34,8 +35,8 @@ The current version includes a desktop interface built with `tkinter`, offering 
 
 ## Requirements
 
-- Python 3.6 or higher
-- No third-party libraries required
+- Python 3.10 or higher recommended
+- `PySide6`
 
 ## Installation
 
@@ -46,19 +47,26 @@ git clone https://github.com/H0tamek/to-do-list.git
 cd to-do-list
 ```
 
-2. Run the application:
+2. Install dependencies:
+
+```bash
+python -m pip install PySide6
+```
+
+3. Run the application:
 
 ```bash
 python main.py
 ```
 
-This command opens the desktop interface.
+This command opens the Qt desktop interface.
 
 ## Project Structure
 
 ```text
 to-do-list/
 |-- main.py
+|-- qt_gui.py
 |-- task_manager.py
 |-- database.py
 |-- task.json
@@ -68,7 +76,7 @@ to-do-list/
 
 ## Usage
 
-After launching the application, the desktop interface opens directly.
+After launching the application, the Qt desktop interface opens directly.
 
 ### Typical Workflow
 
@@ -83,9 +91,10 @@ After launching the application, the desktop interface opens directly.
 
 **View tasks**
 
-- Browse tasks from the left sidebar
-- Review task details, tags, and due date in the center panel
+- Browse notes from the left sidebar
+- Review and edit note details in the center panel
 - Use the calendar panel on the right for quick date context
+- Hide the calendar panel when you want a cleaner writing layout
 
 **Edit a task**
 
@@ -127,7 +136,7 @@ The previous JSON format looked like this:
 - **Language:** Python 3
 - **Storage Engine:** SQLite
 - **Database File:** `tasks.db`
-- **Architecture:** Class-based application structure
+- **Architecture:** SQLite-backed note layer with a Qt desktop client
 - **Persistence:** Automatic local storage for all task changes
 - **ID Strategy:** Auto-incrementing task identifiers
 - **Migration:** One-time import from `task.json` when applicable
@@ -161,11 +170,15 @@ This project is licensed under the [MIT License](LICENSE).
 
 ### `main.py`
 
-Application entry point. Launches the desktop interface.
+Application entry point. Launches the Qt desktop interface.
+
+### `qt_gui.py`
+
+Qt desktop user interface built with `PySide6`. Provides the dark workspace, note list, note editor, due dates, search, and a hideable calendar panel.
 
 ### `gui.py`
 
-Desktop user interface built with `tkinter`. Provides the dark workspace, task list, note-style editor, due dates, status controls, and calendar panel.
+Legacy `tkinter` interface kept temporarily while the migration to Qt is in progress.
 
 ### `task_manager.py`
 

@@ -1,5 +1,5 @@
-from gui import TodoApp
+from qt_gui import run_qt_app
 
 
 if __name__ == "__main__":
-    TodoApp().run()
+    raise SystemExit(run_qt_app())
