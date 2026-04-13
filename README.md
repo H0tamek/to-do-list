@@ -8,6 +8,8 @@ The application is designed to be lightweight, reliable, and easy to run in any 
 
 This project offers a simple command-line interface for day-to-day task tracking. It supports the full task lifecycle, from initial creation to completion, and includes persistent local storage with automatic migration from the legacy JSON format.
 
+The current version also includes a desktop interface built with `tkinter`, allowing tasks to be managed through a graphical workspace instead of the terminal.
+
 ## Features
 
 - View all tasks with their current status
@@ -20,6 +22,7 @@ This project offers a simple command-line interface for day-to-day task tracking
 - Add tags for filtering and grouping
 - Store data in a local SQLite database
 - Automatically migrate legacy data from `task.json` to `tasks.db`
+- Manage tasks through a desktop graphical interface
 
 ## Task Statuses
 
@@ -46,6 +49,8 @@ cd to-do-list
 ```bash
 python main.py
 ```
+
+This command opens the desktop interface.
 
 ## Project Structure
 
@@ -167,7 +172,11 @@ This project is licensed under the [MIT License](LICENSE).
 
 ### `main.py`
 
-Application entry point. Displays the menu, reads user input, and delegates actions to the task manager.
+Application entry point. Launches the desktop interface.
+
+### `gui.py`
+
+Desktop user interface built with `tkinter`. Provides task listing, editing, status management, and form controls for categories and tags.
 
 ### `task_manager.py`
 
