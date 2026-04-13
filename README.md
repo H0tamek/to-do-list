@@ -16,6 +16,8 @@ This project offers a simple command-line interface for day-to-day task tracking
 - Delete tasks
 - Mark tasks as completed
 - Mark tasks as not completed
+- Organize tasks by category
+- Add tags for filtering and grouping
 - Store data in a local SQLite database
 - Automatically migrate legacy data from `task.json` to `tasks.db`
 
@@ -78,14 +80,16 @@ Choose action:
 
 - Select option `2`
 - Enter the task description
+- Enter a category or keep the default `General`
+- Enter optional comma-separated tags
 - The task is saved with the status `In Progress`
 
 **View tasks**
 
 ```text
-ID: 1, Text: Prepare release notes, Status: In Progress
-ID: 2, Text: Review deployment checklist, Status: Completed
-ID: 3, Text: Refactor reporting module, Status: Not Completed
+ID: 1, Text: Prepare release notes, Category: Work, Tags: release, docs, Status: In Progress
+ID: 2, Text: Review deployment checklist, Category: Operations, Tags: deploy, Status: Completed
+ID: 3, Text: Refactor reporting module, Category: Engineering, Tags: backend, cleanup, Status: Not Completed
 ```
 
 **Edit a task**
@@ -93,6 +97,7 @@ ID: 3, Text: Refactor reporting module, Status: Not Completed
 - Select option `3`
 - Enter the task ID
 - Enter the updated task text
+- Update the category and tags if needed
 - The task status is reset to `In Progress`
 
 **Delete a task**
