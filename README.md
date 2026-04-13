@@ -143,7 +143,7 @@ The previous JSON format looked like this:
 
 ## Future Enhancements
 
-- [ ] Add task categories/tags
+- [x] Add task categories/tags
 - [ ] Implement due dates
 - [ ] Add task priority levels
 - [ ] Export to different formats
