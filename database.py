@@ -19,6 +19,7 @@ class TaskDatabase:
                 """
                 CREATE TABLE IF NOT EXISTS tasks (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL DEFAULT 'Untitled note',
                     text TEXT NOT NULL,
                     category TEXT NOT NULL DEFAULT 'General',
                     tags TEXT NOT NULL DEFAULT '',
@@ -40,19 +41,44 @@ class TaskDatabase:
         }
 
         if "category" not in columns:
+            self._safe_add_column(
+                connection,
+                "ALTER TABLE tasks ADD COLUMN category TEXT NOT NULL DEFAULT 'General'",
+            )
+
+        if "title" not in columns:
+            self._safe_add_column(
+                connection,
+                "ALTER TABLE tasks ADD COLUMN title TEXT NOT NULL DEFAULT 'Untitled note'",
+            )
             connection.execute(
-                "ALTER TABLE tasks ADD COLUMN category TEXT NOT NULL DEFAULT 'General'"
+                """
+                UPDATE tasks
+                SET title = CASE
+                    WHEN trim(text) = '' THEN 'Untitled note'
+                    ELSE substr(trim(text), 1, 60)
+                END
+                """
             )
 
         if "tags" not in columns:
-            connection.execute(
-                "ALTER TABLE tasks ADD COLUMN tags TEXT NOT NULL DEFAULT ''"
+            self._safe_add_column(
+                connection,
+                "ALTER TABLE tasks ADD COLUMN tags TEXT NOT NULL DEFAULT ''",
             )
 
         if "due_date" not in columns:
-            connection.execute(
-                "ALTER TABLE tasks ADD COLUMN due_date TEXT NOT NULL DEFAULT ''"
+            self._safe_add_column(
+                connection,
+                "ALTER TABLE tasks ADD COLUMN due_date TEXT NOT NULL DEFAULT ''",
             )
+
+    def _safe_add_column(self, connection, statement):
+        try:
+            connection.execute(statement)
+        except sqlite3.OperationalError as error:
+            if "duplicate column name" not in str(error).lower():
+                raise
 
     def _migrate_legacy_json(self):
         if not self.legacy_json_path.exists():
@@ -77,6 +103,7 @@ class TaskDatabase:
                 if not isinstance(task, dict):
                     continue
 
+                task_title = str(task.get("title", "")).strip()
                 task_text = str(task.get("text", "")).strip()
                 task_status = str(task.get("status", "In Progress")).strip()
                 task_category = str(task.get("category", "General")).strip() or "General"
@@ -86,18 +113,28 @@ class TaskDatabase:
                 if not task_text:
                     continue
 
+                if not task_title:
+                    task_title = task_text[:60]
+
                 if task_status not in {"In Progress", "Completed", "Not Completed"}:
                     task_status = "In Progress"
 
                 valid_tasks.append(
-                    (task_text, task_category, task_tags, task_due_date, task_status)
+                    (
+                        task_title,
+                        task_text,
+                        task_category,
+                        task_tags,
+                        task_due_date,
+                        task_status,
+                    )
                 )
 
             if valid_tasks:
                 connection.executemany(
                     """
-                    INSERT INTO tasks (text, category, tags, due_date, status, updated_at)
-                    VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                    INSERT INTO tasks (title, text, category, tags, due_date, status, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
                     """,
                     valid_tasks,
                 )
@@ -123,19 +160,20 @@ class TaskDatabase:
         with self._connect() as connection:
             cursor = connection.execute(
                 """
-                SELECT id, text, category, tags, due_date, status
+                SELECT id, title, text, category, tags, due_date, status
                 FROM tasks
-                ORDER BY id
+                ORDER BY updated_at DESC, id DESC
                 """
             )
             return [
                 {
                     "id": row[0],
-                    "text": row[1],
-                    "category": row[2],
-                    "tags": row[3],
-                    "due_date": row[4],
-                    "status": row[5],
+                    "title": row[1],
+                    "text": row[2],
+                    "category": row[3],
+                    "tags": row[4],
+                    "due_date": row[5],
+                    "status": row[6],
                 }
                 for row in cursor.fetchall()
             ]
@@ -144,7 +182,7 @@ class TaskDatabase:
         with self._connect() as connection:
             row = connection.execute(
                 """
-                SELECT id, text, category, tags, due_date, status
+                SELECT id, title, text, category, tags, due_date, status
                 FROM tasks
                 WHERE id = ?
                 """,
@@ -156,35 +194,43 @@ class TaskDatabase:
 
             return {
                 "id": row[0],
-                "text": row[1],
-                "category": row[2],
-                "tags": row[3],
-                "due_date": row[4],
-                "status": row[5],
+                "title": row[1],
+                "text": row[2],
+                "category": row[3],
+                "tags": row[4],
+                "due_date": row[5],
+                "status": row[6],
             }
 
-    def add_task(self, text, category, tags, due_date):
+    def add_task(self, title, text, category, tags, due_date):
         with self._connect() as connection:
             cursor = connection.execute(
                 """
-                INSERT INTO tasks (text, category, tags, due_date, status, updated_at)
-                VALUES (?, ?, ?, ?, 'In Progress', CURRENT_TIMESTAMP)
+                INSERT INTO tasks (title, text, category, tags, due_date, status, updated_at)
+                VALUES (?, ?, ?, ?, ?, 'In Progress', CURRENT_TIMESTAMP)
                 """,
-                (text, category, self._normalize_tags(tags), due_date),
+                (title, text, category, self._normalize_tags(tags), due_date),
             )
             connection.commit()
             return cursor.lastrowid
 
-    def update_task(self, task_id, new_text, category, tags, due_date):
+    def update_task(self, task_id, title, new_text, category, tags, due_date):
         with self._connect() as connection:
             cursor = connection.execute(
                 """
                 UPDATE tasks
-                SET text = ?, category = ?, tags = ?, due_date = ?,
+                SET title = ?, text = ?, category = ?, tags = ?, due_date = ?,
                     status = 'In Progress', updated_at = CURRENT_TIMESTAMP
                 WHERE id = ?
                 """,
-                (new_text, category, self._normalize_tags(tags), due_date, task_id),
+                (
+                    title,
+                    new_text,
+                    category,
+                    self._normalize_tags(tags),
+                    due_date,
+                    task_id,
+                ),
             )
             connection.commit()
             return cursor.rowcount > 0

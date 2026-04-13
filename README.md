@@ -1,6 +1,6 @@
 # Todo Manager
 
-Todo Manager is a desktop task management application written in Python. It provides a structured workflow for creating, updating, tracking, and organizing tasks while keeping data stored locally in a SQLite database.
+Todo Manager is gradually evolving into a desktop note-taking application written in Python. It provides a structured workspace for writing notes, organizing them with categories and tags, tracking status when needed, and storing everything locally in SQLite.
 
 The application is designed to be lightweight, reliable, and easy to run in any standard Python environment without external dependencies.
 
@@ -8,19 +8,20 @@ The application is designed to be lightweight, reliable, and easy to run in any 
 
 This project offers a simple command-line interface for day-to-day task tracking. It supports the full task lifecycle, from initial creation to completion, and includes persistent local storage with automatic migration from the legacy JSON format.
 
-The current version includes a desktop interface built with `tkinter`, offering a dark workspace, task properties, categories, tags, due dates, and an integrated calendar panel.
+The current version includes a desktop interface built with `tkinter`, offering a dark workspace, note properties, categories, tags, due dates, and an integrated calendar panel.
 
 ## Features
 
-- View all tasks with their current status
-- Add new tasks
-- Edit existing tasks
-- Delete tasks
+- View all notes with their current status
+- Add new notes
+- Edit existing notes
+- Delete notes
 - Mark tasks as completed
 - Mark tasks as not completed
 - Organize tasks by category
 - Add tags for filtering and grouping
 - Assign due dates to tasks
+- Search notes from the sidebar
 - Store data in a local SQLite database
 - Automatically migrate legacy data from `task.json` to `tasks.db`
 - Manage tasks through a desktop graphical interface

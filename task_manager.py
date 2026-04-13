@@ -9,6 +9,14 @@ class TaskManager:
     def __init__(self):
         self.database = TaskDatabase()
 
+    def _normalize_title(self, title, content):
+        cleaned_title = title.strip()
+        if cleaned_title:
+            return cleaned_title
+
+        first_line = content.strip().splitlines()[0] if content.strip() else ""
+        return first_line[:60] if first_line else "Untitled note"
+
     def _normalize_due_date(self, due_date):
         cleaned_due_date = due_date.strip()
         if not cleaned_due_date:
@@ -20,44 +28,55 @@ class TaskManager:
     def list_tasks(self):
         return self.database.get_all_tasks()
 
-    def create_task(self, text, category="General", tags=None, due_date=""):
+    def create_task(self, title, text, category="General", tags=None, due_date=""):
         cleaned_text = text.strip()
         cleaned_category = category.strip() or "General"
 
         if not cleaned_text:
-            raise ValueError("Task text cannot be empty.")
+            raise ValueError("Note content cannot be empty.")
 
+        normalized_title = self._normalize_title(title, cleaned_text)
         normalized_due_date = self._normalize_due_date(due_date)
         return self.database.add_task(
-            cleaned_text, cleaned_category, tags or [], normalized_due_date
+            normalized_title,
+            cleaned_text,
+            cleaned_category,
+            tags or [],
+            normalized_due_date,
         )
 
     def get_task(self, task_id):
         return self.database.get_task_by_id(task_id)
 
-    def update_task_details(self, task_id, text, category, tags, due_date=""):
+    def update_task_details(self, task_id, title, text, category, tags, due_date=""):
         cleaned_text = text.strip()
         cleaned_category = category.strip() or "General"
 
         if not cleaned_text:
-            raise ValueError("Task text cannot be empty.")
+            raise ValueError("Note content cannot be empty.")
 
+        normalized_title = self._normalize_title(title, cleaned_text)
         normalized_due_date = self._normalize_due_date(due_date)
         updated = self.database.update_task(
-            task_id, cleaned_text, cleaned_category, tags or [], normalized_due_date
+            task_id,
+            normalized_title,
+            cleaned_text,
+            cleaned_category,
+            tags or [],
+            normalized_due_date,
         )
         if not updated:
-            raise ValueError("Task with specified ID not found.")
+            raise ValueError("Note with specified ID not found.")
 
     def remove_task(self, task_id):
         deleted = self.database.delete_task(task_id)
         if not deleted:
-            raise ValueError("Task with specified ID not found.")
+            raise ValueError("Note with specified ID not found.")
 
     def change_task_status(self, task_id, status):
         updated = self.database.update_status(task_id, status)
         if not updated:
-            raise ValueError("Task with specified ID not found.")
+            raise ValueError("Note with specified ID not found.")
 
     def _prompt_category(self):
         category = input("Enter task category (leave empty for General): ").strip()
@@ -110,7 +129,7 @@ class TaskManager:
                 tags = task["tags"] if task["tags"] else "No tags"
                 due_date = task["due_date"] if task["due_date"] else "No due date"
                 print(
-                    f"ID: {task['id']}, Text: {task['text']}, "
+                    f"ID: {task['id']}, Title: {task['title']}, Text: {task['text']}, "
                     f"Category: {task['category']}, Tags: {tags}, "
                     f"Due Date: {due_date}, Status: {task['status']}"
                 )
@@ -122,18 +141,19 @@ class TaskManager:
     
     def add_task(self):
         try:
-            text = input("Enter task text: ")
+            title = input("Enter note title: ")
+            text = input("Enter note text: ")
             cleaned_text = text.strip()
 
             if not cleaned_text:
-                print("Task text cannot be empty.\n")
+                print("Note content cannot be empty.\n")
                 return
 
             category = self._prompt_category()
             tags = self._prompt_tags()
             due_date = self._prompt_due_date()
-            task_id = self.create_task(cleaned_text, category, tags, due_date)
-            print(f"Task successfully added with ID {task_id}.\n")
+            task_id = self.create_task(title, cleaned_text, category, tags, due_date)
+            print(f"Note successfully added with ID {task_id}.\n")
         except ValueError as e:
             print(f"{e}\n")
         except sqlite3.Error as e:
@@ -147,21 +167,24 @@ class TaskManager:
             existing_task = self.get_task(task_id)
 
             if not existing_task:
-                print("Task with specified ID not found.\n")
+                print("Note with specified ID not found.\n")
                 return
 
-            new_text = input("Enter new task text: ").strip()
+            new_title = input("Enter new note title: ").strip()
+            new_text = input("Enter new note text: ").strip()
 
             if not new_text:
-                print("Task text cannot be empty.\n")
+                print("Note content cannot be empty.\n")
                 return
 
             category = self._prompt_category_for_edit(existing_task["category"])
             tags = self._prompt_tags_for_edit(existing_task["tags"])
             due_date = self._prompt_due_date_for_edit(existing_task["due_date"])
 
-            self.update_task_details(task_id, new_text, category, tags, due_date)
-            print("Task successfully modified.\n")
+            self.update_task_details(
+                task_id, new_title, new_text, category, tags, due_date
+            )
+            print("Note successfully modified.\n")
         except ValueError as e:
             error_message = str(e)
             if "invalid literal for int()" in error_message:
@@ -177,7 +200,7 @@ class TaskManager:
         try:
             task_id = int(input("Enter the ID of the task you want to delete: "))
             self.remove_task(task_id)
-            print("Task successfully deleted.\n")
+            print("Note successfully deleted.\n")
         except ValueError as e:
             error_message = str(e)
             if "invalid literal for int()" in error_message:
