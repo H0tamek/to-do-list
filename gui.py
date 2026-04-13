@@ -47,6 +47,7 @@ class TodoApp:
 
         self._build_styles()
         self._build_layout()
+        self._bind_shortcuts()
         self.search_var.trace_add("write", self._on_search_changed)
         self._load_tasks()
 
@@ -102,7 +103,8 @@ class TodoApp:
             font=("Georgia", 24, "bold"),
         ).grid(row=1, column=0, sticky="w", pady=(6, 18))
 
-        self._entry(sidebar, self.search_var).grid(row=2, column=0, sticky="ew")
+        self.search_entry = self._entry(sidebar, self.search_var)
+        self.search_entry.grid(row=2, column=0, sticky="ew")
         tk.Label(
             sidebar,
             text="Search titles, content, tags, categories, or dates",
@@ -126,7 +128,7 @@ class TodoApp:
             fg=self.MUTED,
             font=("Segoe UI", 10, "bold"),
         ).grid(row=0, column=0, sticky="w")
-        self._button(header, "New", self._clear_form, self.PANEL_ALT, width=6).grid(
+        self._button(header, "New", self._start_new_note, self.PANEL_ALT, width=6).grid(
             row=0, column=1, sticky="e"
         )
 
@@ -210,18 +212,22 @@ class TodoApp:
         ).grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 14))
 
         self._field_label(properties, "Title").grid(row=1, column=0, sticky="w", pady=6)
-        self._entry(properties, self.title_var, font=("Georgia", 14, "bold")).grid(
-            row=1, column=1, sticky="ew", pady=6
+        self.title_entry = self._entry(
+            properties, self.title_var, font=("Georgia", 14, "bold")
         )
+        self.title_entry.grid(row=1, column=1, sticky="ew", pady=6)
 
         self._field_label(properties, "Category").grid(row=2, column=0, sticky="w", pady=6)
-        self._entry(properties, self.category_var).grid(row=2, column=1, sticky="ew", pady=6)
+        self.category_entry = self._entry(properties, self.category_var)
+        self.category_entry.grid(row=2, column=1, sticky="ew", pady=6)
 
         self._field_label(properties, "Tags").grid(row=3, column=0, sticky="w", pady=6)
-        self._entry(properties, self.tags_var).grid(row=3, column=1, sticky="ew", pady=6)
+        self.tags_entry = self._entry(properties, self.tags_var)
+        self.tags_entry.grid(row=3, column=1, sticky="ew", pady=6)
 
         self._field_label(properties, "Due date").grid(row=4, column=0, sticky="w", pady=6)
-        self._entry(properties, self.due_date_var).grid(row=4, column=1, sticky="ew", pady=6)
+        self.due_date_entry = self._entry(properties, self.due_date_var)
+        self.due_date_entry.grid(row=4, column=1, sticky="ew", pady=6)
 
         self._field_label(properties, "Status").grid(row=5, column=0, sticky="w", pady=6)
         self.status_menu = tk.OptionMenu(
@@ -306,7 +312,7 @@ class TodoApp:
             justify="center",
         ).pack(pady=(10, 18))
         self._button(
-            empty_inner, "Create a new note", self._clear_form, self.ACCENT_SOFT
+            empty_inner, "Create a new note", self._start_new_note, self.ACCENT_SOFT
         ).pack()
 
         footer = tk.Frame(card, bg=self.BG)
@@ -325,7 +331,7 @@ class TodoApp:
         for index in range(4):
             actions.columnconfigure(index, weight=1)
 
-        self._button(actions, "New Note", self._clear_form, self.PANEL_ALT).grid(
+        self._button(actions, "New Note", self._start_new_note, self.PANEL_ALT).grid(
             row=0, column=0, padx=(0, 8)
         )
         self._button(actions, "Duplicate", self._duplicate_note, self.PANEL_ALT).grid(
@@ -426,6 +432,23 @@ class TodoApp:
             font=("Segoe UI", 10, "bold"),
             cursor="hand2",
         )
+
+    def _bind_shortcuts(self):
+        self.root.bind_class("Entry", "<Control-a>", self._select_all_entry)
+        self.root.bind_class("Entry", "<Control-A>", self._select_all_entry)
+        self.root.bind_class("Text", "<Control-a>", self._select_all_text)
+        self.root.bind_class("Text", "<Control-A>", self._select_all_text)
+
+    def _select_all_entry(self, event):
+        event.widget.select_range(0, "end")
+        event.widget.icursor("end")
+        return "break"
+
+    def _select_all_text(self, event):
+        event.widget.tag_add("sel", "1.0", "end-1c")
+        event.widget.mark_set("insert", "1.0")
+        event.widget.see("insert")
+        return "break"
 
     def _format_display_date(self, due_date):
         if not due_date:
@@ -528,6 +551,18 @@ class TodoApp:
 
     def _hide_empty_state(self):
         self.note_text.tkraise()
+
+    def _start_new_note(self):
+        self.selected_task_id = None
+        self.task_listbox.selection_clear(0, tk.END)
+        self._hide_empty_state()
+        self.footer_var.set("Draft note")
+        if not self.title_var.get().strip() and not self.note_text.get("1.0", tk.END).strip():
+            self.category_var.set("General")
+            self.tags_var.set("")
+            self.due_date_var.set("")
+            self.status_var.set("In Progress")
+        self.title_entry.focus_set()
 
     def _on_listbox_select(self, _event=None):
         selection = self.task_listbox.curselection()

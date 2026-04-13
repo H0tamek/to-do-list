@@ -31,11 +31,11 @@ class TaskManager:
     def create_task(self, title, text, category="General", tags=None, due_date=""):
         cleaned_text = text.strip()
         cleaned_category = category.strip() or "General"
-
-        if not cleaned_text:
-            raise ValueError("Note content cannot be empty.")
-
         normalized_title = self._normalize_title(title, cleaned_text)
+
+        if not cleaned_text and not normalized_title.strip():
+            raise ValueError("Add a title or note content before saving.")
+
         normalized_due_date = self._normalize_due_date(due_date)
         return self.database.add_task(
             normalized_title,
@@ -51,11 +51,11 @@ class TaskManager:
     def update_task_details(self, task_id, title, text, category, tags, due_date=""):
         cleaned_text = text.strip()
         cleaned_category = category.strip() or "General"
-
-        if not cleaned_text:
-            raise ValueError("Note content cannot be empty.")
-
         normalized_title = self._normalize_title(title, cleaned_text)
+
+        if not cleaned_text and not normalized_title.strip():
+            raise ValueError("Add a title or note content before saving.")
+
         normalized_due_date = self._normalize_due_date(due_date)
         updated = self.database.update_task(
             task_id,
