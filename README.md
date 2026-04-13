@@ -1,56 +1,67 @@
-# 📝 Todo Manager
+# Todo Manager
 
-A simple console-based task management application written in Python. Perfect for learning Python fundamentals and working with JSON files!
+Todo Manager is a console-based task management application written in Python. It provides a straightforward workflow for creating, updating, tracking, and deleting tasks while keeping data stored locally in a SQLite database.
 
-## 🚀 Features
+The application is designed to be lightweight, reliable, and easy to run in any standard Python environment without external dependencies.
 
-- ✅ View all tasks with status indicators
-- ➕ Add new tasks
-- ✏️ Edit existing tasks
-- 🗑️ Delete tasks
-- ✔️ Mark tasks as completed
-- ❌ Mark tasks as not completed
-- 💾 SQLite database storage with automatic migration from JSON
+## Overview
 
-## 🎯 Task Statuses
+This project offers a simple command-line interface for day-to-day task tracking. It supports the full task lifecycle, from initial creation to completion, and includes persistent local storage with automatic migration from the legacy JSON format.
 
-- 🔄 **In Progress** - task is currently being worked on
-- ✅ **Completed** - task has been successfully finished
-- ❌ **Not Completed** - task could not be completed
+## Features
 
-## 📋 Requirements
+- View all tasks with their current status
+- Add new tasks
+- Edit existing tasks
+- Delete tasks
+- Mark tasks as completed
+- Mark tasks as not completed
+- Store data in a local SQLite database
+- Automatically migrate legacy data from `task.json` to `tasks.db`
+
+## Task Statuses
+
+- **In Progress**: The task is currently active
+- **Completed**: The task has been finished
+- **Not Completed**: The task could not be completed
+
+## Requirements
 
 - Python 3.6 or higher
-- No additional libraries required!
+- No third-party libraries required
 
-## 🛠️ Installation and Usage
+## Installation
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/H0tamek/to-do-list.git
-   cd todo-manager
-   ```
+1. Clone the repository:
 
-2. **Run the application:**
-   ```bash
-   python main.py
-   ```
-
-## 📁 Project Structure
-
-```
-todo-manager/
-├── main.py              # Main application entry point
-├── task_manager.py      # TaskManager class with core functionality
-├── task.json           # JSON file for storing tasks (auto-created)
-└── README.md           # Project documentation
+```bash
+git clone https://github.com/H0tamek/to-do-list.git
+cd to-do-list
 ```
 
-## 🎮 How to Use
+2. Run the application:
 
-After running the program, you'll see the main menu:
-
+```bash
+python main.py
 ```
+
+## Project Structure
+
+```text
+to-do-list/
+|-- main.py
+|-- task_manager.py
+|-- database.py
+|-- task.json
+|-- tasks.db
+`-- README.md
+```
+
+## Usage
+
+After launching the application, the following menu is displayed:
+
+```text
 Choose action:
 1. View task list
 2. Add task
@@ -59,54 +70,44 @@ Choose action:
 5. Mark task as completed
 6. Mark which task could not be completed
 7. Exit
-
-Enter action number:
 ```
 
-### Usage Examples
+### Typical Workflow
 
-**Adding a task:**
-- Select option 2
-- Enter your task description
-- Task is automatically saved with "In Progress" status
+**Add a task**
 
-**Viewing tasks:**
-```
-ID: 1, Text: Learn Python basics, Status: In Progress
-ID: 2, Text: Build first project, Status: Completed
-ID: 3, Text: Solve complex algorithm, Status: Not Completed
-```
+- Select option `2`
+- Enter the task description
+- The task is saved with the status `In Progress`
 
-**Editing a task:**
-- Select option 3
-- Enter the task ID you want to edit (numbers only)
-- Enter new task text
-- Status automatically resets to "In Progress"
-- If task ID not found, you'll get a helpful error message
+**View tasks**
 
-**Deleting a task:**
-- Select option 4
-- Enter the task ID you want to delete (numbers only)
-- Task is permanently removed
-- If task ID not found, you'll get a helpful error message
-
-**Error Handling Examples:**
-```
-Enter action number: abc
-Error: Invalid input - invalid literal for int() with base 10: 'abc'
-
-Enter the ID of the task you want to edit: xyz
-Invalid task ID format. Please enter a number.
-
-Choose action: 9
-Invalid choice. Please enter a number between 1 and 7.
+```text
+ID: 1, Text: Prepare release notes, Status: In Progress
+ID: 2, Text: Review deployment checklist, Status: Completed
+ID: 3, Text: Refactor reporting module, Status: Not Completed
 ```
 
-## 💾 Data Format
+**Edit a task**
 
-Legacy tasks can be imported from `task.json` automatically on first launch. New data is stored in `tasks.db`.
+- Select option `3`
+- Enter the task ID
+- Enter the updated task text
+- The task status is reset to `In Progress`
 
-The previous JSON structure looked like this:
+**Delete a task**
+
+- Select option `4`
+- Enter the task ID
+- The task is removed from storage
+
+## Data Storage
+
+The application stores active data in `tasks.db`, a local SQLite database created automatically on first run.
+
+If a legacy `task.json` file is present and the database is empty, the application imports the existing tasks automatically. This allows older project versions to move to the database-backed version without losing data.
+
+The previous JSON format looked like this:
 
 ```json
 [
@@ -123,32 +124,19 @@ The previous JSON structure looked like this:
 ]
 ```
 
-## 🔧 Technical Details
+## Technical Details
 
 - **Language:** Python 3
-- **Data Storage:** SQLite database (`tasks.db`)
-- **Architecture:** Simple class-based structure with robust error handling
-- **File Handling:** Automatic file creation and UTF-8 encoding
-- **ID Management:** Auto-incrementing task IDs
-- **Error Handling:** Comprehensive try-catch blocks for all operations
-- **Input Validation:** Proper validation for user inputs and file operations
+- **Storage Engine:** SQLite
+- **Database File:** `tasks.db`
+- **Architecture:** Class-based application structure
+- **Persistence:** Automatic local storage for all task changes
+- **ID Strategy:** Auto-incrementing task identifiers
+- **Migration:** One-time import from `task.json` when applicable
+- **Validation:** Basic input validation for menu actions and task IDs
+- **Error Handling:** Graceful handling of invalid input and storage-related exceptions
 
-## ✨ Key Features of Implementation
-
-- **Automatic Database Creation:** Creates `tasks.db` and required tables if they don't exist
-- **Automatic Migration:** Imports tasks from `task.json` when migrating from the old storage format
-- **UTF-8 Support:** Handles international characters properly
-- **Simple Menu System:** Easy-to-use console interface
-- **Comprehensive Error Handling:** Handles various error scenarios:
-  - Invalid user input (non-numeric task IDs)
-  - File not found errors
-  - JSON parsing errors
-  - General exceptions with descriptive messages
-- **Input Validation:** Menu choice validation (1-7 range)
-- **Persistent Storage:** All changes are immediately saved to file
-- **Graceful Error Recovery:** Application continues running after errors
-
-## 🚀 Future Enhancements
+## Future Enhancements
 
 - [ ] Add task categories/tags
 - [ ] Implement due dates
@@ -157,61 +145,37 @@ The previous JSON structure looked like this:
 - [ ] Task history/audit trail
 - [ ] Bulk operations (mark multiple tasks)
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! If you have ideas for improvements:
+Contributions are welcome. If you would like to improve the project:
 
 1. Fork the repository
-2. Create a new branch for your feature
-3. Make your changes and test them
-4. Create a Pull Request
+2. Create a feature branch
+3. Make and test your changes
+4. Open a pull request
 
-## 📚 Learning Objectives
+## License
 
-This project demonstrates:
-- Basic Python programming concepts
-- Working with JSON files
-- Class-based programming
-- File I/O operations
-- Menu-driven applications
-- **Comprehensive error handling and exception management**
-- **Input validation techniques**
-- **Defensive programming practices**
-- **Try-catch block implementation**
-- **User-friendly error messaging**
+This project is licensed under the [MIT License](LICENSE).
 
-## 📝 License
+## Code Overview
 
-This project is open source and available under the [MIT License](LICENSE).
+### `main.py`
 
-## 👨‍💻 Author
+Application entry point. Displays the menu, reads user input, and delegates actions to the task manager.
 
-Created as a learning project to practice Python fundamentals and file handling.
+### `task_manager.py`
 
----
+Contains the `TaskManager` class and the main business logic for task operations, including task creation, editing, deletion, status updates, validation, and user-facing error handling.
 
-**Happy coding! 🎉**
+### `database.py`
 
-## 🔍 Code Overview
+Provides the SQLite storage layer, database initialization, and migration logic from the legacy JSON format.
 
-### main.py
-Contains the main application loop and menu system. Handles user input and delegates actions to the TaskManager class.
+### `tasks.db`
 
-### task_manager.py
-Core functionality including:
-- `TaskManager` class with all task operations
-- JSON file handling (read/write)
-- Task CRUD operations (Create, Read, Update, Delete)
-- Status management
-- **Comprehensive error handling for all operations:**
-  - `FileNotFoundError` handling
-  - `json.JSONDecodeError` handling for corrupted files
-  - `ValueError` handling for invalid input types
-  - General exception handling with descriptive messages
-  - Task ID validation and "not found" scenarios
+Primary local database file used for persistent task storage.
 
-### tasks.db
-SQLite database used for persistent task storage.
+### `task.json`
 
-### task.json
-Legacy JSON storage file kept for backward compatibility and one-time migration.
+Legacy storage file kept for backward compatibility and automatic one-time migration.
