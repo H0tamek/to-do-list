@@ -1,6 +1,6 @@
 # Todo Manager
 
-Todo Manager is a console-based task management application written in Python. It provides a straightforward workflow for creating, updating, tracking, and deleting tasks while keeping data stored locally in a SQLite database.
+Todo Manager is a desktop task management application written in Python. It provides a structured workflow for creating, updating, tracking, and organizing tasks while keeping data stored locally in a SQLite database.
 
 The application is designed to be lightweight, reliable, and easy to run in any standard Python environment without external dependencies.
 
@@ -8,7 +8,7 @@ The application is designed to be lightweight, reliable, and easy to run in any 
 
 This project offers a simple command-line interface for day-to-day task tracking. It supports the full task lifecycle, from initial creation to completion, and includes persistent local storage with automatic migration from the legacy JSON format.
 
-The current version also includes a desktop interface built with `tkinter`, allowing tasks to be managed through a graphical workspace instead of the terminal.
+The current version includes a desktop interface built with `tkinter`, offering a dark workspace, task properties, categories, tags, due dates, and an integrated calendar panel.
 
 ## Features
 
@@ -20,6 +20,7 @@ The current version also includes a desktop interface built with `tkinter`, allo
 - Mark tasks as not completed
 - Organize tasks by category
 - Add tags for filtering and grouping
+- Assign due dates to tasks
 - Store data in a local SQLite database
 - Automatically migrate legacy data from `task.json` to `tasks.db`
 - Manage tasks through a desktop graphical interface
@@ -66,50 +67,36 @@ to-do-list/
 
 ## Usage
 
-After launching the application, the following menu is displayed:
-
-```text
-Choose action:
-1. View task list
-2. Add task
-3. Edit task
-4. Delete task
-5. Mark task as completed
-6. Mark which task could not be completed
-7. Exit
-```
+After launching the application, the desktop interface opens directly.
 
 ### Typical Workflow
 
 **Add a task**
 
-- Select option `2`
-- Enter the task description
+- Create or select a note in the left task list
+- Enter the task description in the main editor
 - Enter a category or keep the default `General`
 - Enter optional comma-separated tags
-- The task is saved with the status `In Progress`
+- Add a due date in `YYYY-MM-DD` format if needed
+- Save the task
 
 **View tasks**
 
-```text
-ID: 1, Text: Prepare release notes, Category: Work, Tags: release, docs, Status: In Progress
-ID: 2, Text: Review deployment checklist, Category: Operations, Tags: deploy, Status: Completed
-ID: 3, Text: Refactor reporting module, Category: Engineering, Tags: backend, cleanup, Status: Not Completed
-```
+- Browse tasks from the left sidebar
+- Review task details, tags, and due date in the center panel
+- Use the calendar panel on the right for quick date context
 
 **Edit a task**
 
-- Select option `3`
-- Enter the task ID
-- Enter the updated task text
-- Update the category and tags if needed
-- The task status is reset to `In Progress`
+- Select a task from the left sidebar
+- Update its content, category, tags, due date, or status
+- Save the task to persist the changes
 
 **Delete a task**
 
-- Select option `4`
-- Enter the task ID
-- The task is removed from storage
+- Select the task
+- Click `Delete`
+- Confirm the action
 
 ## Data Storage
 
@@ -143,13 +130,14 @@ The previous JSON format looked like this:
 - **Persistence:** Automatic local storage for all task changes
 - **ID Strategy:** Auto-incrementing task identifiers
 - **Migration:** One-time import from `task.json` when applicable
-- **Validation:** Basic input validation for menu actions and task IDs
+- **Due Dates:** Stored in `YYYY-MM-DD` format
+- **Validation:** Basic input validation for task data and due dates
 - **Error Handling:** Graceful handling of invalid input and storage-related exceptions
 
 ## Future Enhancements
 
 - [x] Add task categories/tags
-- [ ] Implement due dates
+- [x] Implement due dates
 - [ ] Add task priority levels
 - [ ] Export to different formats
 - [ ] Task history/audit trail
@@ -176,7 +164,7 @@ Application entry point. Launches the desktop interface.
 
 ### `gui.py`
 
-Desktop user interface built with `tkinter`. Provides task listing, editing, status management, and form controls for categories and tags.
+Desktop user interface built with `tkinter`. Provides the dark workspace, task list, note-style editor, due dates, status controls, and calendar panel.
 
 ### `task_manager.py`
 
